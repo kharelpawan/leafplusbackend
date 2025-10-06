@@ -1,7 +1,9 @@
 {
   "name": "mybackendapi",
+  "name": "mybackendapi",
   "version": "1.0.0",
   "description": "this is express project for my backend project",
+  "description": "this is express project for my  backend project",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
