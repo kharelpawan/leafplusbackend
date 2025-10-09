@@ -1,9 +1,9 @@
-name: 🚀 Deploy Backend to Azure VM
+name: 🚀 Deploy LeafPlus Backend to Azure VM
 
 on:
   push:
     branches:
-      - main
+      - main   # triggers deployment when code is pushed to main branch
 
 jobs:
   deploy:
@@ -18,11 +18,25 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: 🚀 Deploy to Server
+    - name: 🚀 Deploy to Azure VM
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-          cd ~/leafplus || git clone https://github.com/<YOUR_USERNAME>/<YOUR_REPO>.git leafplus && cd leafplus
+          # Go to project directory or clone if not exists
+          if [ ! -d "~/leafplus" ]; then
+            git clone https://github.com/kharelpawan/leafplusbackend.git leafplus
+          fi
+
+          cd ~/leafplus
+
+          # Pull latest code
           git pull origin main
-          npm install
-          pm2 restart all || pm2 start server.js --name leafplus
+
+          # Install dependencies
+          npm install --production
+
+          # Restart backend with PM2
+          pm2 restart leafplus-backend || pm2 start server.js --name leafplus-backend --env production
+
+          # Save PM2 process list (so it auto-starts on reboot)
+          pm2 save
         EOF
