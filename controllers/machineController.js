@@ -1,6 +1,6 @@
 const Machine = require('../models/Machine');
 
-// 👉 Create
+//  Create
 exports.createMachine = async (req, res, next) => {
   try {
     const machine = await Machine.create(req.body);
@@ -10,7 +10,7 @@ exports.createMachine = async (req, res, next) => {
   }
 };
 
-// 👉 Get all
+//  Get all
 exports.getMachines = async (req, res, next) => {
   try {
     const machines = await Machine.find().sort({ createdAt: -1 });
@@ -20,7 +20,7 @@ exports.getMachines = async (req, res, next) => {
   }
 };
 
-// 👉 Get single
+//  Get single
 exports.getMachine = async (req, res, next) => {
   try {
     const machine = await Machine.findById(req.params.id);
@@ -31,7 +31,7 @@ exports.getMachine = async (req, res, next) => {
   }
 };
 
-// 👉 Update
+//  Update
 exports.updateMachine = async (req, res, next) => {
   try {
     const machine = await Machine.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -42,7 +42,7 @@ exports.updateMachine = async (req, res, next) => {
   }
 };
 
-// 👉 Delete
+//  Delete
 exports.deleteMachine = async (req, res, next) => {
   try {
     const machine = await Machine.findByIdAndDelete(req.params.id);

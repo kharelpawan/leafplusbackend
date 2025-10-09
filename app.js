@@ -40,7 +40,14 @@ app.use('/api/machines', machineRoutes);
 app.use('/api/dies', dieRoutes);
 
 app.get('/', (req, res) => res.json({ message: 'Leaf Plus Backend API' }));
-
+// Catch invalid routes
+app.all(/.*/, (req, res) => {
+  res.status(404).json({
+    success: false,
+    title: 'Route Not Found',
+    message: `No route matches ${req.originalUrl}`,
+  });
+});
 // centralized error handler
 app.use(errorHandler);
 

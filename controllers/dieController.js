@@ -1,6 +1,6 @@
 const Die = require('../models/Die');
 
-// 👉 Create
+//  Create
 exports.createDie = async (req, res, next) => {
   try {
     const die = await Die.create(req.body);
@@ -10,7 +10,7 @@ exports.createDie = async (req, res, next) => {
   }
 };
 
-// 👉 Get all
+//  Get all
 exports.getDies = async (req, res, next) => {
   try {
     const dies = await Die.find().sort({ createdAt: -1 });
@@ -20,7 +20,7 @@ exports.getDies = async (req, res, next) => {
   }
 };
 
-// 👉 Get single
+//  Get single
 exports.getDie = async (req, res, next) => {
   try {
     const die = await Die.findById(req.params.id);
@@ -31,7 +31,7 @@ exports.getDie = async (req, res, next) => {
   }
 };
 
-// 👉 Update
+//  Update
 exports.updateDie = async (req, res, next) => {
   try {
     const die = await Die.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -42,7 +42,7 @@ exports.updateDie = async (req, res, next) => {
   }
 };
 
-// 👉 Delete
+//  Delete
 exports.deleteDie = async (req, res, next) => {
   try {
     const die = await Die.findByIdAndDelete(req.params.id);
