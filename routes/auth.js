@@ -11,8 +11,8 @@ router.post('/register', [
 ], register);
 
 router.post('/login', [
-  body('email').isEmail(),
-  body('password').exists()
+  body('email').isEmail().withMessage('Valid email required'),
+  body('password').notEmpty().withMessage('Password is required')
 ], login);
 
 router.get('/me', protect, me);
