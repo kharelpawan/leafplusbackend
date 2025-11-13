@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const Die = require('./Die');
 const downtimeSchema = new mongoose.Schema({
   startTime: { type: Date, required: true },
   endTime: { type: Date, required: false },
@@ -22,13 +22,15 @@ const ProductionBatchSchema = new mongoose.Schema({
 
   machine: { type: mongoose.Schema.Types.ObjectId, ref: 'Machine', required: true },
   die: { type: mongoose.Schema.Types.ObjectId, ref: 'Die' },
-
+  product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+  
   operator: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 
   sourceWashingBatch: { type: mongoose.Schema.Types.ObjectId, ref: 'WashingBatch' },
 
   inputLeaves: { type: Number, default: 0 },
+  productName: { type: String, },
   goodOutput: { type: Number, default: 0 },
   damagedOutput: { type: Number, default: 0 },
   totalOutput: { type: Number, default: 0 },
@@ -48,6 +50,17 @@ ProductionBatchSchema.pre('save', function (next) {
   this.inputLeaves = Number(this.inputLeaves || 0);
   this.goodOutput = Number(this.goodOutput || 0);
   this.damagedOutput = Number(this.damagedOutput || 0);
+  //get product name from die if not set
+  if (!this.productName && this.die) {
+    Die.findById(this.die).select('productName').then(dieData => {
+      if (dieData && dieData.productName) {
+        this.productName = dieData.productName;
+      }
+    }).catch(err => {
+      // handle error if needed
+      console.log(err);
+    });
+  }
 
   this.totalOutput = this.goodOutput + this.damagedOutput;
 
@@ -71,6 +84,13 @@ ProductionBatchSchema.pre('save', function (next) {
   }
   // optional: store in metadata if needed
   // this.totalDowntimeMinutes = totalDowntime;
+  // get product name automatically from Die
+    // if (this.die) {
+    //   const dieData =  Die.findById(this.die).select('productName');
+    //   if (dieData && dieData.productName) {
+    //     this.productName = dieData.productName;
+    //   }
+    // }
 
   // generate batchId if missing
   if (!this.batchId) {

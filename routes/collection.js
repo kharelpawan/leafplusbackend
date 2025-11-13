@@ -29,18 +29,14 @@ router.post(
   protect,
   authorize('collector','factorymanager','storemanager','superadmin','headofficeadmin'),
   upload.fields([{ name: 'collectorSignature', maxCount: 1 }, { name: 'receiverSignature', maxCount: 1 }]),
-  [
-    body('leafType').notEmpty().withMessage('leafType required'),
-    body('netWeight').isNumeric().withMessage('netWeight numeric')
-  ],
   createCollection
 );
 
 // read all (with filters)
 router.get('/', protect, authorize('factorymanager','storemanager','salesmanager','headofficeadmin','superadmin','accountantmanager','headofficeaccountant'), getCollections);
 
-router.get('/:id', protect, getCollection);
-router.put('/:id', protect, updateCollection);
-router.delete('/:id', protect, authorize('superadmin','headofficeadmin'), deleteCollection);
+router.get('/:id', protect, authorize('factorymanager','storemanager','salesmanager','headofficeadmin','superadmin','accountantmanager','headofficeaccountant'),getCollection);
+router.put('/:id', protect, authorize('factorymanager','storemanager','salesmanager','headofficeadmin','superadmin','accountantmanager','headofficeaccountant'),updateCollection);
+router.delete('/:id', protect, authorize('factorymanager','storemanager','salesmanager','headofficeadmin','superadmin','accountantmanager','headofficeaccountant'), deleteCollection);
 
 module.exports = router;

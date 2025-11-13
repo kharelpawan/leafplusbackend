@@ -9,16 +9,17 @@ const UserSchema = new mongoose.Schema({
     type: String,
     enum: [
       'superadmin',
-      'headofficeadmin',
-      'headofficeaccountant',
-      'accountantmanager',
+      // 'headofficeadmin',//hataune
+      // 'headofficeaccountant',
+      'accountant',
       'factorymanager',
       'storemanager',
       'salesmanager',
       'salesperson',
-      'collector'
+      'collector',
+      'generalstaff'
     ],
-    default: 'collector'
+    default: 'generalstaff'
   },
   phone: { type: String },
   isActive: { type: Boolean, default: true },

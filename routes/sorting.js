@@ -25,9 +25,9 @@ router.post(
   protect,
   authorize('factorymanager','superadmin'),
   [
-    body('sourceCollections').optional().isArray(),
-    body('preSortingCountC1').isNumeric().withMessage('preSortingCountC1 numeric'),
-    body('usableCount').isNumeric().withMessage('usableCount numeric')
+    body('sourceCollections').optional(),
+   // body('preSortingCountC1').isNumeric().withMessage('preSortingCountC1 numeric'),
+   // body('usableCount').isNumeric().withMessage('usableCount numeric')
   ],
   createSortingBatch
 );

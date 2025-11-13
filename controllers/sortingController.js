@@ -8,8 +8,8 @@ exports.createSortingBatch = async (req, res, next) => {
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     const body = { ...req.body };
-    body.operator = req.user.id;
-    body.createdBy = req.user.id;
+    //body.operator = req.user.id;
+    body.verifiedBy = req.user.id;
 
     // ensure sourceCollections are valid objectIds and exist
     if (body.sourceCollections && Array.isArray(body.sourceCollections)) {
@@ -64,6 +64,7 @@ exports.getSortingBatch = async (req, res, next) => {
       .populate('operator', 'name email')
       .populate('verifiedBy', 'name')
       .populate('sourceCollections', 'collectionId netWeight leafType');
+
     if (!item) return res.status(404).json({ message: 'Sorting batch not found' });
     res.json(item);
   } catch (err) {

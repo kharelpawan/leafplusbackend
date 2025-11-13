@@ -1,4 +1,6 @@
 const ProductionBatch = require('../models/ProductionBatch');
+const ProductInventory = require('../models/ProductInventory');
+const Product = require('../models/Product');
 const Machine = require('../models/Machine');
 const Die = require('../models/Die');
 const WashingBatch = require('../models/WashingBatch');
@@ -29,7 +31,24 @@ exports.createProductionBatch = async (req, res, next) => {
       const wash = await WashingBatch.findById(body.sourceWashingBatch);
       if (!wash) return res.status(400).json({ message: 'Invalid sourceWashingBatch id' });
     }
+    // Step 2: Update product inventory
+    let productInv = await ProductInventory.findOne({ product: body.product });
+    if (productInv) {
+      productInv.totalProduced += body.outputQuantity;
+      productInv.availableQuantity += body.outputQuantity;
+      productInv.lastUpdated = new Date();
+      await productInv.save();
+    } else {
+      const product = await Product.findById(body.product);
+      if (!product) return res.status(400).json({ message: 'Invalid product ID' });
 
+      await ProductInventory.create({
+        product: product._id,
+        totalProduced: body.outputQuantity,
+        availableQuantity: body.outputQuantity,
+        unit: product.unit
+      });
+    }
     const batch = await ProductionBatch.create(body);
 
     // Optionally: update WashingBatch or Inventory to mark consumed leaves
