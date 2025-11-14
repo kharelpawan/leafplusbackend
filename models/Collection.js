@@ -2,8 +2,11 @@ const mongoose = require('mongoose');
 //import collectorUser to update total pending amount
 const CollectorUser = require('./collectorUser');
 const { generateBatchId } = require('../utils/batchIdGenerator');
+
+
 //console.log("hi"+CollectorUser);
 const CollectionSchema = new mongoose.Schema({
+  //pass a value to generateBatchId function
   collectionId: { type: String, unique: true, index: true , default: generateBatchId},
   date: { type: Date, default: Date.now },
   //yo collector lai ksle pat pathako tyo user ko id line

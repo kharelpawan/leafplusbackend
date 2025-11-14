@@ -4,6 +4,8 @@ const Die = require('../models/Die');
 exports.createDie = async (req, res, next) => {
   try {
     const die = await Die.create(req.body);
+    //set product name from product id
+
     res.status(201).json(die);
   } catch (err) {
     next(err);

@@ -3,7 +3,7 @@ const ProductInventory = require('../models/ProductInventory');
 const Product = require('../models/Product');
 const Machine = require('../models/Machine');
 const Die = require('../models/Die');
-const WashingBatch = require('../models/WashingBatch');
+//const WashingBatch = require('../models/WashingBatch');
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 
@@ -13,42 +13,57 @@ exports.createProductionBatch = async (req, res, next) => {
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     const body = { ...req.body };
-    body.operator = req.user.id;
-    body.createdBy = req.user.id;
+ //how to get product name using die id
 
+console.log(body);
+    //body.operator = req.user.id;
+    body.createdBy = req.user.id;
+    //set product name from die if die is provided
+    if (body.die) {
+      const die = await Die.findById(body.die).populate('productName');
+      if (die && die.productName) {
+        body.product = die.productName;
+      }
+    }
+
+    // Step 1: Validate references
     // validate machine
-    const machine = await Machine.findById(body.machine);
-    if (!machine) return res.status(400).json({ message: 'Invalid machine id' });
+    // const machine = await Machine.findById(body.machine);
+    // if (!machine) return res.status(400).json({ message: 'Invalid machine id' });
 
     // optional validate die
     if (body.die) {
       const die = await Die.findById(body.die);
+      //console.log(die);
       if (!die) return res.status(400).json({ message: 'Invalid die id' });
     }
 
     // optional validate source washing batch
-    if (body.sourceWashingBatch) {
-      const wash = await WashingBatch.findById(body.sourceWashingBatch);
-      if (!wash) return res.status(400).json({ message: 'Invalid sourceWashingBatch id' });
-    }
+    // if (body.sourceWashingBatch) {
+    //   const wash = await WashingBatch.findById(body.sourceWashingBatch);
+    //   if (!wash) return res.status(400).json({ message: 'Invalid sourceWashingBatch id' });
+    // }
     // Step 2: Update product inventory
-    let productInv = await ProductInventory.findOne({ product: body.product });
-    if (productInv) {
-      productInv.totalProduced += body.outputQuantity;
-      productInv.availableQuantity += body.outputQuantity;
-      productInv.lastUpdated = new Date();
-      await productInv.save();
-    } else {
-      const product = await Product.findById(body.product);
-      if (!product) return res.status(400).json({ message: 'Invalid product ID' });
+    // let productInv = await ProductInventory.findOne({ product: body.product });
+    // console.log(productInv);
+    // if (productInv) {
+    //   productInv.totalProduced += body.outputQuantity;
+    //   productInv.availableQuantity += body.outputQuantity;
+    //   productInv.lastUpdated = new Date();
+    //   await productInv.save();
+    // } else {
+    //   //get product form die id
+    //   const product = await Product.findById(body.product);
+    //   console.log(product);
+    //   if (!product) return res.status(400).json({ message: 'Invalid product id' });
 
-      await ProductInventory.create({
-        product: product._id,
-        totalProduced: body.outputQuantity,
-        availableQuantity: body.outputQuantity,
-        unit: product.unit
-      });
-    }
+    //   await ProductInventory.create({
+    //     product: product._id,
+    //     totalProduced: body.outputQuantity,
+    //     availableQuantity: body.outputQuantity,
+    //     unit: product.unit
+    //   });
+    // }
     const batch = await ProductionBatch.create(body);
 
     // Optionally: update WashingBatch or Inventory to mark consumed leaves
@@ -71,11 +86,12 @@ exports.getProductionBatches = async (req, res, next) => {
 
     const total = await ProductionBatch.countDocuments(query);
     const items = await ProductionBatch.find(query)
-      .populate('machine')
+      //.populate('machine')
       .populate('die')
+      //.populate('product')
       .populate('operator', 'name email')
       .populate('verifiedBy', 'name')
-      .populate('sourceWashingBatch', 'batchId')
+      // .populate('sourceWashingBatch', 'batchId')
       .sort({ date: -1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
@@ -89,11 +105,13 @@ exports.getProductionBatches = async (req, res, next) => {
 exports.getProductionBatch = async (req, res, next) => {
   try {
     const item = await ProductionBatch.findById(req.params.id)
-      .populate('machine')
+      //.populate('machine')
       .populate('die')
+      //.populate('product')
       .populate('operator', 'name')
       .populate('verifiedBy', 'name')
-      .populate('sourceWashingBatch', 'batchId');
+      console.log(item);
+      // .populate('sourceWashingBatch', 'batchId');
     if (!item) return res.status(404).json({ message: 'Production batch not found' });
     res.json(item);
   } catch (err) {

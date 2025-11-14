@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true },
+  productName: { type: String,  unique: true, required: true },
   price: { type: Number, required: true },
   description: { type: String },
   //make unit to store in array like one or multiple units can be stored
@@ -14,4 +14,5 @@ const productSchema = new mongoose.Schema({
   //totalSold: { type: Number }
 }, { timestamps: true });
 
+//set dies product name to product name before saving prod
 module.exports = mongoose.model('Product', productSchema);

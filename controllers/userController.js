@@ -1,11 +1,22 @@
 const asyncHandler = require('express-async-handler');
 const { validationResult } = require('express-validator');
 const User = require('../models/User');
+
 //@desc get all users
 //@route GET /api/v1/users
 //@access public
 const getUsers = asyncHandler(async(req, res) => {
-  const users = await User.find();
+  let query = {};
+  if(req.query.role){
+    query.role = req.query.role;
+  }
+  const users = await User.find({...query}, '-password');
+  //remove password from user object before sending response
+  // const usersWithoutPassword = users.map(user => {
+  //   const userObj = user.toObject();
+  //   delete userObj.password;
+  //   return userObj;
+  // });
   res.status(200).json(users);
 })
 
@@ -16,7 +27,9 @@ const getUser = asyncHandler(async (req, res) => {
     res.status(404);
      throw new Error('User not found');
   }
-  res.status(200).json(user); 
+  const userWithoutPassword = user.toObject();
+  delete userWithoutPassword.password;
+  res.status(200).json(userWithoutPassword); 
 })
 
 
@@ -33,7 +46,7 @@ const getUser = asyncHandler(async (req, res) => {
 // }
 // )
 const createUser = asyncHandler(async (req, res) => {
-  // ✅ Validate fields from express-validator
+  //  Validate fields from express-validator
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -41,7 +54,7 @@ const createUser = asyncHandler(async (req, res) => {
 
   const { name, email, password, role, phone } = req.body;
 
-  // ✅ Check if email already exists
+  //  Check if email already exists
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     return res.status(400).json({ message: 'Email already registered.' });

@@ -21,7 +21,7 @@ router.post(
   protect,
   authorize('factorymanager','superadmin','productionmanager'), // productionmanager may be optional if you add it
   [
-    body('machine').notEmpty().withMessage('machine is required'),
+    //body('machine').notEmpty().withMessage('machine is required'),
     body('inputLeaves').isNumeric().withMessage('inputLeaves numeric'),
     body('goodOutput').isNumeric().withMessage('goodOutput numeric'),
     body('damagedOutput').isNumeric().withMessage('damagedOutput numeric')

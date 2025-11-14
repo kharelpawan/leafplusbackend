@@ -5,6 +5,8 @@ const MachineSchema = new mongoose.Schema({
   name: { type: String, required: true },
   location: { type: String }, // factory/line
   status: { type: String, enum: ['active','inactive','maintenance'], default: 'active' },
+  //list of dies associated with this machine
+  dies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Die' }],
   metadata: { type: Object }
 }, { timestamps: true });
 

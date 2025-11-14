@@ -1,4 +1,5 @@
 const { request } = require("express");
+const { body } = require("express-validator");
 
 /**
  * Generates a unique, time-based batch ID in the format SB-YYYYMMDD_HHmmssSSS.
@@ -21,7 +22,6 @@ function generateBatchId() {
 
     // Combine date and time parts
     const timeStampPart = `${year}${month}${day}_${hours}${minutes}${seconds}${milliseconds}`;
-
     return `Batch-${timeStampPart}`;
 }
 

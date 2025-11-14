@@ -24,16 +24,19 @@ exports.getProduct = async (req, res, next) => {
 // @desc Create product
 exports.createProduct = async (req, res, next) => {
   try {
-    const newProduct = await Product.create({
-      ...req.body,
-      createdBy: req.user ? req.user._id : null
-    });
-    res.status(201).json(newProduct);
+    const product = await Product.findOne({productName: req.body.productName});
+    if (product) {
+      return res.status(400).json({ message: 'Product with this ID already exists' });
+    }else{
+      const newProduct = new Product(req.body);
+      //console.log('this is new product' + newProduct);
+      await newProduct.save();
+      res.status(201).json(newProduct);
+    }
   } catch (error) {
     next(error);
   }
 };
-
 // @desc Update product
 exports.updateProduct = async (req, res, next) => {
   try {

@@ -70,6 +70,7 @@ exports.getCollections = async (req, res, next) => {
 exports.getCollection = async (req, res, next) => {
   try {
     const item = await Collection.findById(req.params.id).populate('collector', 'name email');
+    console.log(item);
     if (!item) return res.status(404).json({ message: 'Collection not found' });
     res.json(item);
   } catch (err) {
