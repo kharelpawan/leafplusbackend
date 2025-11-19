@@ -10,10 +10,13 @@ exports.createSortingBatch = async (req, res, next) => {
     const body = { ...req.body };
     //body.operator = req.user.id;
     body.verifiedBy = req.user.id;
-
+    //console.log(body);
+    const found = body.sourceCollections;
+    console.log(body.sourceCollections);
     // ensure sourceCollections are valid objectIds and exist
     if (body.sourceCollections && Array.isArray(body.sourceCollections)) {
-      const found = await Collection.find({ _id: { $in: body.sourceCollections } }).select('_id');
+      const found = await Collection.find({ _id: { $in: body.sourceCollections } }).select('_id status');
+      //console.log(found.status);
       if (found.length !== body.sourceCollections.length) {
         return res.status(400).json({ message: 'One or more sourceCollections are invalid' });
       }
@@ -21,7 +24,12 @@ exports.createSortingBatch = async (req, res, next) => {
 
     // create
     const batch = await SortingBatch.create(body);
-
+    if(found){
+      await Collection.updateOne(
+        {_id: found},
+        {$set: {status: 'sorted'}}
+      )
+    }
     // OPTIONAL: mark Collections as "processed" or attach link (we already link them via sourceCollections)
     res.status(201).json(batch);
   } catch (err) {

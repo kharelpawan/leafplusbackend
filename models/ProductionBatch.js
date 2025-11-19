@@ -29,7 +29,9 @@ const ProductionBatchSchema = new mongoose.Schema({
 
   //sourceWashingBatch: { type: mongoose.Schema.Types.ObjectId, ref: 'WashingBatch' },
 
-  inputLeaves: { type: Number, default: 0 },
+  inputSmallLeaves: { type: Number, default: 0 },
+  inputBigLeaves: { type: Number, default: 0 },
+  inputLeaves: { type: Number},
   productName: { type: String, },
   goodOutput: { type: Number, default: 0 },
   damagedOutput: { type: Number, default: 0 },
@@ -50,7 +52,10 @@ const ProductionBatchSchema = new mongoose.Schema({
 ProductionBatchSchema.pre('save', async function (next) {
   try {
     // compute totals and percentages
-    this.inputLeaves = Number(this.inputLeaves || 0);
+      this.inputLeaves = Number(this.inputSmallLeaves + this.inputBigLeaves || 0);
+    this.inputSmallLeaves = Number(this.inputSmallLeaves || 0);
+    this.inputBigLeaves = Number(this.inputBigLeaves || 0);
+  
     this.goodOutput = Number(this.goodOutput || 0);
     this.damagedOutput = Number(this.damagedOutput || 0);
     this.totalOutput = this.goodOutput + this.damagedOutput;
@@ -86,9 +91,11 @@ const LeafInventory = mongoose.model('LeafInventory');
 //find leaf lintentory which is just one
     const inventoryRecord = await LeafInventory.findOne();
     if (inventoryRecord) {
-     inventoryRecord.availableLeaves = inventoryRecord.availableLeaves-  this.inputLeaves;
+    inventoryRecord.availableLeaves = inventoryRecord.availableLeaves - this.inputLeaves;
+    inventoryRecord.availableSmallLeaves = inventoryRecord.availableSmallLeaves - this.inputSmallLeaves;
+    inventoryRecord.availableBigLeaves = inventoryRecord.availableBigLeaves - this.inputBigLeaves;
     inventoryRecord.usedInProduction += this.inputLeaves;
-     await inventoryRecord.save();   
+     await inventoryRecord.save(); 
     }
     //import ProductInventory model
     const ProductInventory = mongoose.model('ProductInventory');

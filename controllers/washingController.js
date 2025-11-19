@@ -139,8 +139,9 @@ exports.createWashingBatch = async (req, res, next) => {
 
     const washingBatch = await WashingBatch.create(body);
     const populated = await WashingBatch.findById(washingBatch._id)
-      //.populate('operator', 'name')
-      .populate('guns.gun', 'name code status operatingUser'); //  populate gun info
+      .populate('guns.operatingUser', 'name')
+      .populate('createdBy', 'name')
+      .populate('guns.gun', 'name code status'); //  populate gun info
 
     res.status(201).json(populated);
   } catch (err) {
@@ -161,14 +162,14 @@ exports.getWashingBatches = async (req, res, next) => {
 
     const total = await WashingBatch.countDocuments(query);
     const batches = await WashingBatch.find(query)
-      .populate('operator', 'name')
-      .populate('verifiedBy', 'name')
+      .populate('guns.operatingUser', 'name')
+      //.populate('verifiedBy', 'name')
       //.populate('sourceSortingBatch', 'batchId usableCount damagedCount')
-      .populate('guns.gun', 'name code status operator') // ✅ populate gun details
+      .populate('guns.gun', 'name code status') // ✅ populate gun details
       .sort({ date: -1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
-
+      console.log(batches);
     res.json({ total, page: parseInt(page), limit: parseInt(limit), batches });
   } catch (err) {
     next(err);
@@ -178,10 +179,10 @@ exports.getWashingBatches = async (req, res, next) => {
 exports.getWashingBatch = async (req, res, next) => {
   try {
     const batch = await WashingBatch.findById(req.params.id)
-      .populate('operator', 'name')
-      .populate('verifiedBy', 'name')
+      .populate('guns.operatingUser', 'name')
+      //.populate('verifiedBy', 'name')
       //.populate('sourceSortingBatch', 'batchId usableCount damagedCount')
-      .populate('guns.gun', 'name code status operator');
+      .populate('guns.gun', 'name code status');
 
     if (!batch) return res.status(404).json({ message: 'Washing batch not found' });
     res.json(batch);
@@ -198,7 +199,7 @@ exports.updateWashingBatch = async (req, res, next) => {
     Object.assign(batch, req.body);
     await batch.save();
 
-    const updated = await WashingBatch.findById(batch._id).populate('guns.gun', 'name code status operator');
+    const updated = await WashingBatch.findById(batch._id).populate('guns.gun', 'name code status');
     res.json(updated);
   } catch (err) {
     next(err);

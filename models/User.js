@@ -21,7 +21,7 @@ const UserSchema = new mongoose.Schema({
     ],
     default: 'generalstaff'
   },
-  phone: { type: String },
+  phone: { type: String, default: '**********' },
   isActive: { type: Boolean, default: true },
   metadata: { type: Object }
 }, { timestamps: true });

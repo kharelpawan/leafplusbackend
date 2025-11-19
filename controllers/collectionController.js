@@ -56,11 +56,12 @@ exports.getCollections = async (req, res, next) => {
     const skip = (Math.max(parseInt(page, 10) - 1, 0)) * parseInt(limit, 10);
     const total = await Collection.countDocuments(query);
     const items = await Collection.find(query)
-      .populate('collector', 'name email')
+      .populate('collector', 'name phone')
+      .populate('createdBy', 'name phone')
       .sort({ date: -1 })
       .skip(skip)
       .limit(parseInt(limit, 10));
-
+      // console.log(items);
     res.json({ total, page: parseInt(page, 10), limit: parseInt(limit, 10), items });
   } catch (err) {
     next(err);

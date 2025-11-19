@@ -19,7 +19,7 @@ const GunSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
-  operatingUser: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  operatingUser: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Gun', GunSchema);

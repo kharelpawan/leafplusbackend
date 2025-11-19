@@ -10,7 +10,7 @@ const CollectionSchema = new mongoose.Schema({
   collectionId: { type: String, unique: true, index: true , default: generateBatchId},
   date: { type: Date, default: Date.now },
   //yo collector lai ksle pat pathako tyo user ko id line
-  collector: { type: String, index: true, required:true },//pat ko owner
+  collector: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },//pat ko owner
   modeOfCollection: { type: String, enum: ['dropoff', 'pickup'], default: 'dropoff' },
   vehicleId: { type: String },
   sourceLocation: { type: String },
@@ -34,7 +34,8 @@ const CollectionSchema = new mongoose.Schema({
   //   receiverSignature: String
   // },
   remarks: { type: String },
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  status:{type: String, default:'notsorted'}
 }, { timestamps: true });
 
 // generate collectionId and calculate totalPayable before save
@@ -49,6 +50,12 @@ const LeafInventory = mongoose.model('LeafInventory');
      inventoryRecord.totalCollected+= this.countc1;
      inventoryRecord.availableForSorting += this.countc1;
      await inventoryRecord.save();   
+    }else{
+      //create new leaf inventory
+      await LeafInventory.create({
+        totalCollected: this.countc1,
+        availableForSorting: this.countc1
+      });
     }
   //drop off condition for transport charges
   if (this.modeOfCollection === 'pickup') {

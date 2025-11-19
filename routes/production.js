@@ -6,6 +6,7 @@ const {
   createProductionBatch,
   getProductionBatches,
   getProductionBatch,
+  getProductionBatchByDie,
   updateProductionBatch,
   deleteProductionBatch,
   dailyProductionReport,
@@ -22,15 +23,16 @@ router.post(
   authorize('factorymanager','superadmin','productionmanager'), // productionmanager may be optional if you add it
   [
     //body('machine').notEmpty().withMessage('machine is required'),
-    body('inputLeaves').isNumeric().withMessage('inputLeaves numeric'),
+    //body('inputLeaves').isNumeric().withMessage('inputLeaves numeric'),
     body('goodOutput').isNumeric().withMessage('goodOutput numeric'),
     body('damagedOutput').isNumeric().withMessage('damagedOutput numeric')
   ],
   createProductionBatch
 );
-
+// getProductionBatchByDie
 // List
 router.get('/', protect, authorize('factorymanager','headofficeadmin','headofficeaccountant','superadmin'), getProductionBatches);
+router.get('/die/:id', protect, authorize('factorymanager','headofficeadmin','headofficeaccountant','superadmin'), getProductionBatchByDie);
 
 // Reports
 router.get('/report/daily', protect, authorize('factorymanager','headofficeadmin','headofficeaccountant','superadmin'), dailyProductionReport);

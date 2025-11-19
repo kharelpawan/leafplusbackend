@@ -118,6 +118,30 @@ exports.getProductionBatch = async (req, res, next) => {
     next(err);
   }
 };
+//get production By DIE ID
+exports.getProductionBatchByDie = async (req, res, next) => {
+  try {
+    console.log(req.params.id);
+    // 💡 Change: Use 'find' and query by the 'die' field using the ID from params
+    const items = await ProductionBatch.find({ die: req.params.id })
+      .populate('die')
+      .populate('operator', 'name')
+      .populate('verifiedBy', 'name');
+      
+    console.log("this is item "+ items); // Note: This will now be an array of documents
+    
+    // Check if any batches were found
+    if (items.length === 0) {
+      return res.status(404).json({ message: 'Production batches for this die not found' });
+    }
+    
+    // Send the array of production batches for that die
+    res.json(items);
+  } catch (err) {
+    next(err);
+  }
+};
+
 
 exports.updateProductionBatch = async (req, res, next) => {
   try {

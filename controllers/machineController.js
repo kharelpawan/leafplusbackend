@@ -20,6 +20,17 @@ exports.getMachines = async (req, res, next) => {
   }
 };
 
+//  Get all
+exports.getDiesByMachine = async (req, res, next) => {
+  try {
+    console.log(req.params.id);
+    const machines = await Machine.findById(req.params.id)
+    const dies = machines.dies;
+    res.json(dies);
+  } catch (err) {
+    next(err);
+  }
+};
 //  Get single
 exports.getMachine = async (req, res, next) => {
   try {
